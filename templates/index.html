@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kafe Sıralama Arayüzü</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 40px auto;
+      max-width: 900px;
+      padding: 20px;
+      background-color: #fcfcfc;
+      color: #222;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      transition: transform 0.2s ease;
+    }
+    .logo:hover {
+      transform: scale(1.1);
+    }
+    h1 {
+      margin-top: 10px;
+      color: #007acc;
+      font-size: 28px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      margin-right: 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #007acc;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    #result {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #f0f8ff;
+      border: 1px solid #b3d7ff;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 600px) {
+      textarea { font-size: 12px; }
+      button { width: 100%; margin-bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="Logo" class="logo" />
+    </a>
+    <h1>Kafe Sıralama API</h1>
+  </div>
+  <p>JSON formatında kafe verilerini girin ve "Gönder" tuşuna basın.</p>
+  <form id="cafeForm">
+    <textarea id="jsonInput" rows="10" placeholder='[{"name": "Kafe 1", "puan": 4.5}, ...]'></textarea><br>
+    <button type="submit">Gönder</button>
+    <button type="button" id="loadExample">📄 Örneği Yükle</button>
+  </form>
+  <h3>📌 Örnek JSON:</h3>
+  <pre id="jsonExample">
+[
+  {
+    "name": "Cafe Mavi",
+    "puan": 4.2,
+    "konum": "Ankara",
+    "kategori": "Kahve"
+  },
+  {
+    "name": "Cafe Yeşil",
+    "puan": 3.8,
+    "konum": "İstanbul",
+    "kategori": "Tatlı"
+  }
+]
+  </pre>
+  <div id="result"></div>
+  <script>
+    const form = document.getElementById('cafeForm');
+    const resultDiv = document.getElementById('result');
+    const loadButton = document.getElementById('loadExample');
+    const jsonInput = document.getElementById('jsonInput');
+    const exampleJson = [
+      {"name": "Cafe Mavi", "puan": 4.2, "konum": "Ankara", "kategori": "Kahve"},
+      {"name": "Cafe Yeşil", "puan": 3.8, "konum": "İstanbul", "kategori": "Tatlı"}
+    ];
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const jsonData = JSON.parse(jsonInput.value);
+        const response = await fetch('/save_cafe_data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jsonData)
+        });
+        const result = await response.json();
+        resultDiv.textContent = JSON.stringify(result, null, 2);
+      } catch (err) {
+        resultDiv.textContent = "Hata: Geçersiz JSON girdisi veya API hatası.\n" + err;
+      }
+    });
+    loadButton.addEventListener('click', () => {
+      jsonInput.value = JSON.stringify(exampleJson, null, 2);
+    });
+  </script>
+</body>
+</html>
