@@ -1,6 +1,4 @@
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from pymcdm.methods import EDAS, CODAS, WASPAS
 from pyDecision.algorithm import idocriw_method
